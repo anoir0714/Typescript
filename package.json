@@ -22,7 +22,10 @@
   },
   "homepage": "https://github.com/anoir0714/Typescript#readme",
   "devDependencies": {
-    "gulp-typescript": "^2.13.4"
+    "gulp": "^3.9.1",
+    "gulp-tslint": "^5.0.0",
+    "gulp-typescript": "^2.13.4",
+    "tslint": "^3.10.2"
   },
   "dependencies": {
     "jquery": "^2.2.3"
