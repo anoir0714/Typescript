@@ -2,9 +2,12 @@ var gulp = require('gulp');
 var tslint = require('gulp-tslint');
 var ts = require('gulp-typescript');
 var browserify = require('browserify');
-var transform = require('vinyl-transform'),
-var uglify = require('gulp-uglify'),
+var transform = require('vinyl-transform');
+var uglify = require('gulp-uglify');
 var sourcemaps = require('gulp-sourcemaps');
+var runSequence = require('run-sequence');
+var karma = require('gulp-karma');
+var browserSync = require('browser-sync');
 
 var tsProject = ts.createProject(
   {
@@ -30,7 +33,19 @@ var tsTestProject = ts.createProject(
     return b.bundle;
   });
 
-gulp.task('default', ['lint', 'tsc', 'tsc-tests']);
+// gulp.task('default', ['lint', 'tsc', 'tsc-tests', 'bundle-js', 'bundle-test']);
+
+gulp.task('default', function(cb)
+{
+  runSequence(
+    'lint',
+    ['tsc', 'tsc-tests'],
+    ['bundle-js', 'bundle-test'],
+    'karma',
+    'browser-sync',
+    cb
+  );
+});
 
 gulp.task('lint', function()
 {
@@ -43,14 +58,14 @@ gulp.task('tsc', function()
 {
     return gulp.src('./source/ts/**/**.ts')
     .pipe(ts(tsProject))
-    .js.pipe(gulp.desc('./temp/sourdce/js'));
+    .js.pipe(gulp.dest('./temp/sourdce/js'));
 });
 
 gulp.task('tsc-tests', function()
 {
     return gulp.src('./test/ts/**/**.ts')
-    .pipe(ts(tsProject))
-    .js.pipe(gulp.desc('./temp/test/js'));
+    .pipe(ts(tsTestProject))
+    .js.pipe(gulp.dest('./temp/test/js'));
 });
 
 gulp.task('bundle-js', function()
@@ -64,8 +79,57 @@ gulp.task('bundle-js', function()
     .pipe(uglify())
     .pipe(sourcemaps.write('./'))
     .pipe(gulp.dest('./dist/source/js/'));
-})
+});
 
+gulp.task('bundle-test', function()
+{
+  return gulp.src('./temp/test/**/**.test.js')
+  .pipe(browserified)
+  .pipe(gulp.dest('./dist/test/'));
+});
+
+gulp.task('karma', function(cb)
+{
+  gulp.src('./dist/test/**/**.test.js')
+  .pipe(karma(
+    {
+      configFile: 'karma.conf.js',
+      action: 'run'
+    }))
+    .on('end', cb)
+    .on('error', function(err)
+    {
+      throw err;
+    });
+});
+
+gulp.task('bundle', function(cb)
+{
+  runSequence('build', ['bundle-js', 'bundle-test'], cb);
+});
+
+gulp.task('test', function(cb)
+{
+  runSequence('bundle', ['karma'], cb);
+});
+
+gulp.task('browser-sync', ['test'], function()
+{
+  browserSync({
+      server:{
+        baseDir: "./dist"
+      }
+    });
+
+    return gulp.watch(
+      [
+        "./dist/source/js/**/*.js",
+        "./dist/sour('ce/css/**.css",
+        "./dist/test/**/**.test.js",
+        "./dist/data/**/**",
+        "./index.html"
+      ], [browserSync.reload]);
+});
 
 
 // gulp.task('default', function()

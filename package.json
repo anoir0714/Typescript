@@ -22,10 +22,25 @@
   },
   "homepage": "https://github.com/anoir0714/Typescript#readme",
   "devDependencies": {
+    "browser-sync": "^2.12.8",
+    "chai": "^3.5.0",
     "gulp": "^3.9.1",
+    "gulp-karma": "0.0.5",
+    "gulp-run": "^1.6.12",
     "gulp-tslint": "^5.0.0",
     "gulp-typescript": "^2.13.4",
-    "tslint": "^3.10.2"
+    "karma": "^0.13.22",
+    "karma-chai": "^0.1.0",
+    "karma-coverage": "^1.0.0",
+    "karma-mocha": "^1.0.1",
+    "karma-phantomjs-launcher": "^1.0.0",
+    "karma-sinon": "^1.0.5",
+    "mocha": "^2.4.5",
+    "phantomjs-prebuilt": "^2.1.7",
+    "run-sequence": "^1.1.5",
+    "sinon": "^1.17.4",
+    "tslint": "^3.10.2",
+    "yo": "^1.8.1"
   },
   "dependencies": {
     "jquery": "^2.2.3"
